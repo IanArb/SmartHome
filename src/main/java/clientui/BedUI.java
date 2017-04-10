@@ -1,21 +1,24 @@
 package clientui;
 
 import java.awt.event.ActionEvent;
-import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import javax.swing.*;
+
 import client.BedClient;
 
 public class BedUI extends ClientUI {
 
     private static final long serialVersionUID = -5318589393275157185L;
     private JButton warm;
-    private JButton roomLight;
-    private JButton lamps;
+    private JToggleButton lightsToggle;
 
-    private final BedClient parent;
+    private final BedClient bedClient;
 
     public BedUI(BedClient bedClient) {
         super(bedClient);
-        parent = bedClient;
+        this.bedClient = bedClient;
         init();
     }
 
@@ -23,20 +26,27 @@ public class BedUI extends ClientUI {
     public void init() {
         super.init();
         warm = new JButton(UIConstants.WARM_BUTTON);
-        roomLight = new JButton("Room light");
-        lamps = new JButton("Lamps");
+        lightsToggle = new JToggleButton("On/Off", true);
         scroll.setBounds(5, 40, UIConstants.COMPONENTWIDTH, 300);
-        add(new JButton[]{warm, roomLight, lamps});
+        addToggle(new JToggleButton[]{lightsToggle});
+        add(new JButton[]{warm});
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == warm) {
-            parent.warm();
+    public void actionPerformed(ActionEvent actionEvent) {
+        if (actionEvent.getSource() == warm) {
+            bedClient.warm();
         }
+    }
 
-        if(e.getSource() == roomLight) {
-            parent.lights();
+    @Override
+    public void itemStateChanged(ItemEvent itemEvent) {
+        if(itemEvent.getSource() == lightsToggle) {
+            if(itemEvent.getStateChange() == ItemEvent.SELECTED) {
+                bedClient.lights();
+            } else if(itemEvent.getStateChange() == ItemEvent.DESELECTED) {
+                bedClient.lights();
+            }
         }
     }
 }

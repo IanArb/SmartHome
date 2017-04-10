@@ -7,5 +7,6 @@ public class UIConstants {
     public static final int COMPONENTWIDTH = 520;
     public static final int CONTROLY = 425;
 
-    public static final String WARM_BUTTON = "Warm";
+    public static final String WARM_BUTTON = "Warm room";
+    public static final String LIGHTS_BUTTON = "Turn on lights";
 }

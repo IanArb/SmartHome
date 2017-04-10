@@ -4,6 +4,7 @@
 package client;
 
 import clientui.BedUI;
+import utils.Constants;
 
 /**
  * Bed Client.
@@ -13,16 +14,18 @@ import clientui.BedUI;
 public class BedClient extends Client {
 
     private final String WARM = "Warm";
-    private final String LIGHTS = "Lights";
+    private final String LIGHTS_ON = "Lights On";
+    private final String LIGHTS_OFF = "Lights Off";
     private boolean isWarming = false;
     private boolean isOn = false;
+    private boolean isOff = false;
 
     /**
      * Bed Client Constructor.
      */
     public BedClient() {
         super();
-        serviceType = "_bed._udp.local.";
+        serviceType = Constants.UDP_SOCKET;
         ui = new BedUI(this);
         name = "Bedroom";
     }
@@ -32,23 +35,39 @@ public class BedClient extends Client {
      */
     public void warm() {
         if (!isWarming) {
-            String a = sendMessage(WARM);
-            if (a.equals(OK)) {
+            String action = sendMessage(WARM);
+            if (action.equals(Constants.REQUEST_OK)) {
                 isWarming = true;
-                ui.updateArea("Bed is Warming");
+                ui.updateArea("Bedroom is warming");
             }
         } else {
-            ui.updateArea("Bed already Warming");
+            ui.updateArea("Bedroom is already warming");
         }
     }
 
     public void lights() {
         if(!isOn) {
-            String action = sendMessage(LIGHTS);
-            if(action.equals(OK)) {
-                ui.updateArea("Lights are on");
+            String action = sendMessage(LIGHTS_ON);
+            if(action.equals(Constants.REQUEST_OK)) {
+                isOn = true;
+                ui.updateArea("Lights are turned on");
+            }
+        } else {
+            sendMessage(LIGHTS_OFF);
+            isOn = false;
+            ui.updateArea("Lights are turned off");
+        }
+    }
+
+    public void lightsOff() {
+        if(!isOff) {
+            String action = sendMessage(LIGHTS_OFF);
+            if(action.equals(Constants.REQUEST_OK)) {
+                isOff = true;
+                ui.updateArea("Lights are turned off");
             } else {
-                ui.updateArea("Lights are off");
+                isOff = false;
+                ui.updateArea("Lights are on");
             }
         }
     }
@@ -59,8 +78,15 @@ public class BedClient extends Client {
 
     @Override
     public void updatePoll(String msg) {
-        if (msg.equals("Bed is 100% warmed.")) {
-            isWarming = false;
+        switch (msg) {
+            case "Bed is 100% warmed.":
+                isWarming = false;
+                break;
+            default:
+                isWarming = false;
+                isOn = false;
+                isOff = false;
+                break;
         }
     }
 
@@ -69,5 +95,7 @@ public class BedClient extends Client {
         super.disable();
         ui = new BedUI(this);
         isWarming = false;
+        isOn = false;
+        isOff = false;
     }
 }

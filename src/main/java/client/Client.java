@@ -186,15 +186,15 @@ public abstract class Client {
         PrintWriter out = new PrintWriter(pollSocket.getOutputStream(),
                 true);
         out.println(Constants.STATUS_REQUEST);
+        out.println(Constants.LIGHTS_ON_REQUEST);
+        out.println(Constants.LIGHTS_OFF_REQUEST);
         BufferedReader in = new BufferedReader(new InputStreamReader(
                 pollSocket.getInputStream()));
         msg = in.readLine();
         String prevStatus = serverStatus;
         serverStatus = msg;
-        if (!prevStatus.equals(serverStatus)) {
-            if (!msg.isEmpty()) {
-                ui.updateArea(msg);
-            }
+        if (!prevStatus.equals(serverStatus) && !msg.isEmpty()) {
+            ui.updateArea(msg);
             updatePoll(msg);
         }
         out.close();
@@ -206,7 +206,7 @@ public abstract class Client {
     }
 
     public void updatePoll(String msg) {
-        // TODO Auto-generated method stub
+        //Stub method
     }
 
     public void setCurrent(ServiceInfo info) {

@@ -7,14 +7,10 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 
 import client.Client;
 
@@ -23,7 +19,7 @@ import client.Client;
  *
  * @author dominic
  */
-public abstract class ClientUI extends JPanel implements ActionListener {
+public abstract class ClientUI extends JPanel implements ActionListener, ItemListener{
 
     /**
      * The Constant serialVersionUID.
@@ -61,6 +57,13 @@ public abstract class ClientUI extends JPanel implements ActionListener {
         for (JButton in : a) {
             in.addActionListener(this);
             controls.add(in);
+        }
+    }
+
+    public void addToggle(JToggleButton[] toggleButtons) {
+        for(JToggleButton jToggleButtons: toggleButtons) {
+            jToggleButtons.addItemListener(this);
+            controls.add(jToggleButtons);
         }
     }
 

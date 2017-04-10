@@ -1,9 +1,6 @@
 package services;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -19,7 +16,7 @@ public abstract class Service extends Thread {
     protected String SERVICE_NAME;
     protected int SERVICE_PORT;
     protected int my_backlog = 5;
-    protected ServerSocket my_serverSocket;
+    protected ServerSocket serverSocket;
     protected JmDNS jmdns;
     protected Socket socket;
     protected String status;
@@ -53,7 +50,7 @@ public abstract class Service extends Thread {
 
     private void initSocket() {
         try {
-            my_serverSocket = new ServerSocket(SERVICE_PORT, my_backlog);
+            serverSocket = new ServerSocket(SERVICE_PORT, my_backlog);
         } catch (IOException e) {
             initPort();
             e.printStackTrace();
@@ -75,7 +72,7 @@ public abstract class Service extends Thread {
         jmdns.unregisterService(info);
         try {
             this.stop();
-            my_serverSocket.close();
+            serverSocket.close();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -90,7 +87,7 @@ public abstract class Service extends Thread {
     public void run() {
         while (true) {
             try {
-                socket = my_serverSocket.accept();
+                socket = serverSocket.accept();
 
                 in = new BufferedReader(new InputStreamReader(socket
                         .getInputStream()));
@@ -117,17 +114,26 @@ public abstract class Service extends Thread {
         return SERVICE_PORT;
     }
 
-    public void sendBack(String a) {
+    public void sendBackTemperature(String action) {
+        getOutStream(action);
+    }
+
+    public void sendBack(String action) {
+        getOutStream(action);
+    }
+
+    private void getOutStream(String action) {
         try {
-            out = new PrintWriter(socket.getOutputStream(), true);
-            out.println(a);
+            OutputStream outputStream = socket.getOutputStream();
+            out = new PrintWriter(outputStream, true);
+            out.println(action);
             out.close();
         } catch (IOException e) {
-            ui.updateArea("Client not accessible");
+            ui.updateArea("Client not accessible: " + e.getMessage());
         }
     }
 
-    protected abstract void performAction(String a);
+    protected abstract void performAction(String action);
 
     public static int findFreePort() throws IOException {
         ServerSocket server = new ServerSocket(0);
@@ -137,5 +143,7 @@ public abstract class Service extends Thread {
     }
 
     public abstract String getStatus();
+
+    public abstract String getLightsStatus();
 
 }
