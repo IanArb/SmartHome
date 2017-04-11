@@ -121,8 +121,8 @@ public abstract class Service extends Thread {
             out = new PrintWriter(outputStream, true);
             out.println(action);
             out.close();
-        } catch (IOException e) {
-            ui.updateArea("Client not accessible: " + e.getMessage());
+        } catch (IOException exception) {
+            ui.updateArea("Client not accessible: " + exception.getMessage());
         }
     }
 
