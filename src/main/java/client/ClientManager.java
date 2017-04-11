@@ -18,10 +18,12 @@ public class ClientManager implements ServiceListener {
     private final ClientManagerUI ui;
     private JmDNS jmdns;
     private final BedClient bedClient = new BedClient();
+    private final KitchenClient kitchenClient = new KitchenClient();
 
     public ClientManager() throws IOException {
         jmdns = JmDNS.create(InetAddress.getLocalHost());
         jmdns.addServiceListener(bedClient.getServiceType(), this);
+        jmdns.addServiceListener(kitchenClient.getServiceType(), this);
         ui = new ClientManagerUI(this);
     }
 
@@ -64,6 +66,27 @@ public class ClientManager implements ServiceListener {
             bedClient.disable();
             bedClient.initialized = false;
         }
+
+        /*
+        Kitchen Service
+
+         */
+        if (kitchenClient.getServiceType().equals(type) && kitchenClient.hasMultiple()) {
+            if (kitchenClient.isCurrent(name)) {
+                ServiceInfo[] a = jmdns.list(type);
+                for (ServiceInfo in : a) {
+                    if (!in.getName().equals(name)) {
+                        newService = in;
+                    }
+                }
+                kitchenClient.switchService(newService);
+            }
+            kitchenClient.remove(name);
+        } else if (kitchenClient.getServiceType().equals(type)) {
+            ui.removePanel(kitchenClient.returnUI());
+            kitchenClient.disable();
+            kitchenClient.initialized = false;
+        }
     }
 
     public void serviceResolved(ServiceEvent serviceEvent) {
@@ -84,6 +107,20 @@ public class ClientManager implements ServiceListener {
         } else if (bedClient.getServiceType().equals(type)
                 && bedClient.isInitialized()) {
             bedClient.addChoice(serviceEvent.getInfo());
+        }
+
+         /*
+        Kitchen Service
+
+         */
+        if (kitchenClient.getServiceType().equals(type) && !kitchenClient.isInitialized()) {
+            kitchenClient.setUp(address, port);
+            ui.addPanel(kitchenClient.returnUI(), kitchenClient.getName());
+            kitchenClient.setCurrent(serviceEvent.getInfo());
+            kitchenClient.addChoice(serviceEvent.getInfo());
+        } else if (kitchenClient.getServiceType().equals(type)
+                && kitchenClient.isInitialized()) {
+            kitchenClient.addChoice(serviceEvent.getInfo());
         }
     }
 

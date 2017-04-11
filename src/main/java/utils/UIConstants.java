@@ -12,4 +12,8 @@ public class UIConstants {
     public static final String LIGHTS_OFF = "Lights: OFF";
     public static final String LAMP_ON = "Lamp: ON";
     public static final String LAMP_OFF = "Lamp: OFF";
+
+    public static final String BOIL_BUTTON = "Boil Kettle";
+    public static final String OVEN_ON = "Oven: ON";
+    public static final String OVEN_OFF = "Oven: OFF";
 }
