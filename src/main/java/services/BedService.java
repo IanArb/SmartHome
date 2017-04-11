@@ -12,49 +12,54 @@ import utils.Constants;
  */
 public class BedService extends Service {
 
-    private final Timer tempTimer;
-    private final Timer lightsTimer;
+    private final Timer timer;
     private int percentHot;
-    private int lightsPer;
-    private int brightness;
     private boolean isOn;
-    private boolean isOff;
 
     public BedService(String name) {
-        super(name, Constants.UDP_SOCKET);
-        tempTimer = new Timer();
-        lightsTimer = new Timer();
+        super(name, Constants.UDP_SOCKET_BED);
+        timer = new Timer();
         percentHot = 0;
-        lightsPer = 0;
-        brightness = 0;
         isOn = false;
         ui = new ServiceUI(this, name);
     }
 
     @Override
-    public void performAction(String a) {
-        switch (a) {
+    public void performAction(String action) {
+        switch (action) {
             case Constants.STATUS_REQUEST:
-                sendBackTemperature(getStatus());
+                sendBack(getStatus());
                 break;
             case Constants.WARM_REQUEST:
-                tempTimer.schedule(new RemindTask(), 0, 2000);
+                timer.schedule(new RemindTask(), 0, 1000);
                 sendBack(Constants.REQUEST_OK);
-                ui.updateArea("Warming Bed");
-                break;
-            default:
-                sendBackTemperature(BAD_COMMAND + " - " + a);
+                ui.updateArea("Warming bedroom");
                 break;
             case Constants.LIGHTS_ON_REQUEST:
                 sendBack(Constants.REQUEST_OK);
+                isOn = true;
                 ui.updateArea("Turning on lights");
                 break;
             case Constants.LIGHTS_OFF_REQUEST:
                 sendBack(Constants.REQUEST_OK);
+                isOn = false;
                 ui.updateArea("Turning off lights");
                 break;
             case Constants.LIGHTS_STATUS:
                 sendBack(getLightsStatus());
+                break;
+            case Constants.LAMP_ON_REQUEST:
+                sendBack(Constants.REQUEST_OK);
+                isOn = false;
+                ui.updateArea("Turning on lamp");
+                break;
+            case Constants.LAMP_OFF_REQUEST:
+                sendBack(Constants.REQUEST_OK);
+                isOn = false;
+                ui.updateArea("Turning off lamp");
+                break;
+            default:
+                sendBack(Constants.BAD_COMMAND + " - " + action);
                 break;
         }
     }
@@ -76,14 +81,14 @@ public class BedService extends Service {
 
     @Override
     public String getLightsStatus() {
-        if(isOff) {
-            return "Lights are off";
-        } else {
+        if(isOn) {
             return "Lights are on";
+        } else {
+            return "Lights are off";
         }
     }
 
     public static void main(String[] args) throws IOException {
-        new BedService("Bed Service");
+        new BedService(Constants.BED_SERVICE_NAME);
     }
 }

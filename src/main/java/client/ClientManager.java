@@ -17,11 +17,11 @@ public class ClientManager implements ServiceListener {
 
     private final ClientManagerUI ui;
     private JmDNS jmdns;
-    private final BedClient client = new BedClient();
+    private final BedClient bedClient = new BedClient();
 
     public ClientManager() throws IOException {
         jmdns = JmDNS.create(InetAddress.getLocalHost());
-        jmdns.addServiceListener(client.getServiceType(), this);
+        jmdns.addServiceListener(bedClient.getServiceType(), this);
         ui = new ClientManagerUI(this);
     }
 
@@ -43,21 +43,26 @@ public class ClientManager implements ServiceListener {
         String type = serviceEvent.getType();
         String name = serviceEvent.getName();
         ServiceInfo newService = null;
-        if (client.getServiceType().equals(type) && client.hasMultiple()) {
-            if (client.isCurrent(name)) {
+
+        removeService(type, name, newService);
+    }
+
+    private void removeService(String type, String name, ServiceInfo newService) {
+        if (bedClient.getServiceType().equals(type) && bedClient.hasMultiple()) {
+            if (bedClient.isCurrent(name)) {
                 ServiceInfo[] a = jmdns.list(type);
                 for (ServiceInfo in : a) {
                     if (!in.getName().equals(name)) {
                         newService = in;
                     }
                 }
-                client.switchService(newService);
+                bedClient.switchService(newService);
             }
-            client.remove(name);
-        } else if (client.getServiceType().equals(type)) {
-            ui.removePanel(client.returnUI());
-            client.disable();
-            client.initialized = false;
+            bedClient.remove(name);
+        } else if (bedClient.getServiceType().equals(type)) {
+            ui.removePanel(bedClient.returnUI());
+            bedClient.disable();
+            bedClient.initialized = false;
         }
     }
 
@@ -67,17 +72,21 @@ public class ClientManager implements ServiceListener {
         int port = serviceEvent.getInfo().getPort();
         String type = serviceEvent.getInfo().getType();
 
-        if (client.getServiceType().equals(type) && !client.isInitialized()) {
-            client.setUp(address, port);
-            ui.addPanel(client.returnUI(), client.getName());
-            client.setCurrent(serviceEvent.getInfo());
-            client.addChoice(serviceEvent.getInfo());
-        } else if (client.getServiceType().equals(type)
-                && client.isInitialized()) {
-            client.addChoice(serviceEvent.getInfo());
+        initService(serviceEvent, address, port, type);
+    }
 
+    private void initService(ServiceEvent serviceEvent, String address, int port, String type) {
+        if (bedClient.getServiceType().equals(type) && !bedClient.isInitialized()) {
+            bedClient.setUp(address, port);
+            ui.addPanel(bedClient.returnUI(), bedClient.getName());
+            bedClient.setCurrent(serviceEvent.getInfo());
+            bedClient.addChoice(serviceEvent.getInfo());
+        } else if (bedClient.getServiceType().equals(type)
+                && bedClient.isInitialized()) {
+            bedClient.addChoice(serviceEvent.getInfo());
         }
     }
+
 
     public static void main(String[] args) throws IOException {
         new ClientManager();

@@ -13,6 +13,7 @@ import java.util.Vector;
 import javax.swing.*;
 
 import client.Client;
+import utils.UIConstants;
 
 /**
  * The Class ClientUI.
@@ -53,7 +54,7 @@ public abstract class ClientUI extends JPanel implements ActionListener, ItemLis
         add(scroll);
     }
 
-    public void add(JButton[] a) {
+    public void addButton(JButton[] a) {
         for (JButton in : a) {
             in.addActionListener(this);
             controls.add(in);
@@ -61,16 +62,22 @@ public abstract class ClientUI extends JPanel implements ActionListener, ItemLis
     }
 
     public void addToggle(JToggleButton[] toggleButtons) {
-        for(JToggleButton jToggleButtons: toggleButtons) {
-            jToggleButtons.addItemListener(this);
-            controls.add(jToggleButtons);
+        for(JToggleButton jToggleButton: toggleButtons) {
+            jToggleButton.addItemListener(this);
+            controls.add(jToggleButton);
         }
     }
 
-    public void addChoices(Vector<String> a) {
-        System.out.println("passed to add choices" + a);
+    public void addLabel(JLabel[] jLabels) {
+        for(JLabel jLabel : jLabels) {
+            controls.add(jLabel);
+        }
+    }
+
+    public void addChoices(Vector<String> vector) {
+        System.out.println("passed to add choices" + vector);
         remove(services);
-        services = new JComboBox(a);
+        services = new JComboBox(vector);
         services.addActionListener(actionListener);
         services.setBounds(170, 5, 200, 30);
         add(services);

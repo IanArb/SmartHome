@@ -10,6 +10,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.*;
 
 import client.ClientManager;
+import utils.UIConstants;
 
 public class ClientManagerUI extends JFrame {
 

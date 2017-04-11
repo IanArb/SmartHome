@@ -19,11 +19,8 @@ public abstract class Service extends Thread {
     protected ServerSocket serverSocket;
     protected JmDNS jmdns;
     protected Socket socket;
-    protected String status;
     protected ServiceUI ui;
     protected ServiceInfo info;
-    protected final String BAD_COMMAND = "bad Command";
-    protected String STATUS_REQUEST = "get_status";
     protected PrintWriter out;
     protected BufferedReader in;
 
