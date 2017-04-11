@@ -7,23 +7,20 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 
 import client.Client;
+import utils.UIConstants;
 
 /**
  * The Class ClientUI.
  *
  * @author dominic
  */
-public abstract class ClientUI extends JPanel implements ActionListener {
+public abstract class ClientUI extends JPanel implements ActionListener, ItemListener{
 
     /**
      * The Constant serialVersionUID.
@@ -57,17 +54,30 @@ public abstract class ClientUI extends JPanel implements ActionListener {
         add(scroll);
     }
 
-    public void add(JButton[] a) {
+    public void addButton(JButton[] a) {
         for (JButton in : a) {
             in.addActionListener(this);
             controls.add(in);
         }
     }
 
-    public void addChoices(Vector<String> a) {
-        System.out.println("passed to add choices" + a);
+    public void addToggle(JToggleButton[] toggleButtons) {
+        for(JToggleButton jToggleButton: toggleButtons) {
+            jToggleButton.addItemListener(this);
+            controls.add(jToggleButton);
+        }
+    }
+
+    public void addLabel(JLabel[] jLabels) {
+        for(JLabel jLabel : jLabels) {
+            controls.add(jLabel);
+        }
+    }
+
+    public void addChoices(Vector<String> vector) {
+        System.out.println("passed to add choices" + vector);
         remove(services);
-        services = new JComboBox(a);
+        services = new JComboBox(vector);
         services.addActionListener(actionListener);
         services.setBounds(170, 5, 200, 30);
         add(services);

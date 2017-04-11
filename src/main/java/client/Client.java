@@ -26,16 +26,12 @@ public abstract class Client {
     protected ClientUI ui;
     protected String serverHost = "";
     protected int serverPort = 0;
-    protected String serviceType = "stuff";
+    protected String serviceType = "";
     protected boolean initialized = false;
     protected String name = " ";
     protected Socket toServer;
-    protected String pollQuery;
-    protected String pollResult;
     protected Timer timer;
     protected HashMap<String, ServiceInfo> services;
-    protected final String OK = "OK";
-    protected final String OK_LIGHTS = "OK_LIGHTS";
     protected ServiceInfo current;
     protected String serverStatus;
 
@@ -55,9 +51,9 @@ public abstract class Client {
                 break;
             }
         }
-        Vector<String> d = new Vector<>();
-        d.addAll(services.keySet());
-        ui.addChoices(d);
+        Vector<String> vector = new Vector<>();
+        vector.addAll(services.keySet());
+        ui.addChoices(vector);
     }
 
     public boolean isCurrent(String name) {
@@ -186,15 +182,15 @@ public abstract class Client {
         PrintWriter out = new PrintWriter(pollSocket.getOutputStream(),
                 true);
         out.println(Constants.STATUS_REQUEST);
+        out.println(Constants.LIGHTS_ON_REQUEST);
+        out.println(Constants.LIGHTS_OFF_REQUEST);
         BufferedReader in = new BufferedReader(new InputStreamReader(
                 pollSocket.getInputStream()));
         msg = in.readLine();
         String prevStatus = serverStatus;
         serverStatus = msg;
-        if (!prevStatus.equals(serverStatus)) {
-            if (!msg.isEmpty()) {
-                ui.updateArea(msg);
-            }
+        if (!prevStatus.equals(serverStatus) && !msg.isEmpty()) {
+            ui.updateArea(msg);
             updatePoll(msg);
         }
         out.close();
@@ -206,7 +202,7 @@ public abstract class Client {
     }
 
     public void updatePoll(String msg) {
-        // TODO Auto-generated method stub
+        //Stub method
     }
 
     public void setCurrent(ServiceInfo info) {
