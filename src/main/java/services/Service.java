@@ -111,10 +111,6 @@ public abstract class Service extends Thread {
         return SERVICE_PORT;
     }
 
-    public void sendBackTemperature(String action) {
-        getOutStream(action);
-    }
-
     public void sendBack(String action) {
         getOutStream(action);
     }
