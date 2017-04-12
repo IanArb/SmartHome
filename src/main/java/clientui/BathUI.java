@@ -1,7 +1,7 @@
 package clientui;
 
-
-import client.KitchenClient;
+import client.BathClient;
+import client.Client;
 import utils.UIConstants;
 
 import javax.swing.*;
@@ -9,38 +9,38 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 
 /**
- * Created by Fran Firmino on 11/04/2017.
+ * Created by Fran Firmino on 12/04/2017.
  */
-public class KitchenUI extends ClientUI{
+public class BathUI extends ClientUI{
     private static final long serialVersionUID = -5318589393275157185L;
-    private JButton boil;
-    private JToggleButton ovenToggle;
+    private JButton heat;
+    private JToggleButton lightsToggle;
     private JToggleButton tapToggle;
 
-    private final KitchenClient kitchenClient;
+    private final BathClient bathClient;
 
-    public KitchenUI(KitchenClient kitchenClient) {
-        super(kitchenClient);
-        this.kitchenClient = kitchenClient;
+
+    public BathUI(BathClient bathClient) {
+        super(bathClient);
+        this.bathClient = bathClient;
         init();
     }
 
     @Override
     public void init() {
         super.init();
-        boil = new JButton(UIConstants.BOIL_BUTTON);
-        ovenToggle = new JToggleButton(UIConstants.OVEN_ON, true);
+        heat = new JButton(UIConstants.BOILER_BUTTON);
+        lightsToggle = new JToggleButton(UIConstants.LIGHTS_ON, true);
         tapToggle = new JToggleButton(UIConstants.TAP_ON, true);
         scroll.setBounds(5, 40, UIConstants.COMPONENTWIDTH, 300);
-        addToggle(new JToggleButton[]{ovenToggle, tapToggle});
-        addButton(new JButton[]{boil});
+        addToggle(new JToggleButton[]{lightsToggle, tapToggle});
+        addButton(new JButton[]{heat});
     }
-
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        if (actionEvent.getSource() == boil) {
-            kitchenClient.boil();
+        if (actionEvent.getSource() == heat) {
+            bathClient.heat();
         }
     }
 
@@ -50,10 +50,9 @@ public class KitchenUI extends ClientUI{
 
         int stateChange = itemEvent.getStateChange();
 
-        ovenSwitch(source, stateChange);
+        lightsSwitch(source, stateChange);
 
         tapSwitch(source, stateChange);
-
 
     }
 
@@ -61,27 +60,27 @@ public class KitchenUI extends ClientUI{
         if(source == tapToggle) {
             switch (stateChange) {
                 case ItemEvent.SELECTED:
-                    kitchenClient.tap();
+                    bathClient.tap();
                     tapToggle.setText(UIConstants.TAP_OFF);
                     break;
                 case ItemEvent.DESELECTED:
-                    kitchenClient.tap();
+                    bathClient.tap();
                     tapToggle.setText(UIConstants.TAP_ON);
                     break;
             }
         }
     }
 
-    private void ovenSwitch(Object source, int stateChange) {
-        if(source == ovenToggle) {
+    private void lightsSwitch(Object source, int stateChange) {
+        if(source == lightsToggle) {
             switch (stateChange) {
                 case ItemEvent.SELECTED:
-                    kitchenClient.oven();
-                    ovenToggle.setText(UIConstants.OVEN_OFF);
+                    bathClient.lights();
+                    lightsToggle.setText(UIConstants.LIGHTS_OFF);
                     break;
                 case ItemEvent.DESELECTED:
-                    kitchenClient.oven();
-                    ovenToggle.setText(UIConstants.OVEN_ON);
+                    bathClient.lights();
+                    lightsToggle.setText(UIConstants.LIGHTS_ON);
                     break;
             }
         }
