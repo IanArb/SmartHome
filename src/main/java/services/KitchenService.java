@@ -87,6 +87,11 @@ public class KitchenService extends Service {
         return "Oven is "+status;
     }
 
+    @Override
+    public String getCurtainStatus() {
+        return null;
+    }
+
     public String getKettleStatus() {
         return "Kettle is "+percentBoiled + "% boiled. ";
     }
