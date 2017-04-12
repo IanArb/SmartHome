@@ -27,5 +27,5 @@ public class Constants {
     public static final String BED_SERVICE_NAME = "Bed Service";
     public static final String LIVING_ROOM_SERVICE_NAME = "Living Room Service";
     public static final String UDP_SOCKET_BED = "_bed._udp.local.";
-    public static final String UDP_SOCKET_LIVING = "_living._udp.local";
+    public static final String UDP_SOCKET_LIVING = "_living._udp.local.";
 }

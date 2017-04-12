@@ -14,7 +14,7 @@ public class LivingRoomClient extends Client implements LivingRoomView {
     private LivingRoomPresenterImpl presenter;
 
     public LivingRoomClient() {
-        serviceType = Constants.UDP_SOCKET_BED;
+        serviceType = Constants.UDP_SOCKET_LIVING;
         ui = new LivingRoomUI(this);
         name = "Living Room";
         presenter = new LivingRoomPresenterImpl(this);

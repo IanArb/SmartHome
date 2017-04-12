@@ -23,7 +23,7 @@ public class LivingRoomService extends Service {
     private int curtainPercentage;
 
     public LivingRoomService(String name) {
-        super(name, Constants.UDP_SOCKET_BED);
+        super(name, Constants.UDP_SOCKET_LIVING);
         timer = new Timer();
         isLightsOn = false;
         isOpen = false;
@@ -118,11 +118,13 @@ public class LivingRoomService extends Service {
 
     @Override
     public String getLightsStatus() {
+        String message;
         if(isLightsOn) {
-            return "Lights are on";
+            message = "Lights are on";
         } else {
-            return "Lights are off";
+            message = "Lights are off";
         }
+        return message;
     }
 
     public String getCurtainStatus() {
@@ -130,11 +132,13 @@ public class LivingRoomService extends Service {
     }
 
     public String getTVStatus() {
+        String message;
         if(isOn) {
-            return "TV is ON";
+            message = "TV is ON";
         } else {
-            return "TV is OFF";
+            message = "TV is OFF";
         }
+        return message;
     }
 
     public static void main(String[] args) throws IOException {
