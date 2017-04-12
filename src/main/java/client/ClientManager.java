@@ -19,11 +19,13 @@ public class ClientManager implements ServiceListener {
     private JmDNS jmdns;
     private final BedClient bedClient = new BedClient();
     private final KitchenClient kitchenClient = new KitchenClient();
+    private final BathClient bathClient = new BathClient();
 
     public ClientManager() throws IOException {
         jmdns = JmDNS.create(InetAddress.getLocalHost());
         jmdns.addServiceListener(bedClient.getServiceType(), this);
         jmdns.addServiceListener(kitchenClient.getServiceType(), this);
+        jmdns.addServiceListener(bathClient.getServiceType(), this);
         ui = new ClientManagerUI(this);
     }
 
@@ -87,6 +89,27 @@ public class ClientManager implements ServiceListener {
             kitchenClient.disable();
             kitchenClient.initialized = false;
         }
+
+         /*
+        Bathroom Service
+
+         */
+        if (bathClient.getServiceType().equals(type) && bathClient.hasMultiple()) {
+            if (bathClient.isCurrent(name)) {
+                ServiceInfo[] a = jmdns.list(type);
+                for (ServiceInfo in : a) {
+                    if (!in.getName().equals(name)) {
+                        newService = in;
+                    }
+                bathClient.switchService(newService);
+            }
+            bathClient.remove(name);
+        } else if(bathClient.getServiceType().equals(type)) {
+            ui.removePanel(bathClient.returnUI());
+            bathClient.disable();
+            bathClient.initialized = false;
+        }
+     }
     }
 
     public void serviceResolved(ServiceEvent serviceEvent) {
@@ -121,6 +144,20 @@ public class ClientManager implements ServiceListener {
         } else if (kitchenClient.getServiceType().equals(type)
                 && kitchenClient.isInitialized()) {
             kitchenClient.addChoice(serviceEvent.getInfo());
+        }
+
+           /*
+        Bathroom Service
+
+         */
+        if (bathClient.getServiceType().equals(type) && !bathClient.isInitialized()) {
+            bathClient.setUp(address, port);
+            ui.addPanel(bathClient.returnUI(), bathClient.getName());
+            bathClient.setCurrent(serviceEvent.getInfo());
+            bathClient.addChoice(serviceEvent.getInfo());
+        } else if (bathClient.getServiceType().equals(type)
+                && bathClient.isInitialized()) {
+            bathClient.addChoice(serviceEvent.getInfo());
         }
     }
 

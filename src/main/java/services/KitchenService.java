@@ -11,7 +11,8 @@ import utils.Constants;
  * Created by Fran Firmino on 11/04/2017.
  */
 public class KitchenService extends Service {
-    private boolean isON;
+    private boolean ovenOn;
+    private boolean tapOn;
     private final Timer timer;
     private int percentBoiled;
 
@@ -19,7 +20,8 @@ public class KitchenService extends Service {
         super(name, Constants.UDP_SOCKET_KITCHEN);
         timer = new Timer();
         percentBoiled = 0;
-        isON = false;
+        ovenOn = false;
+        tapOn = false;
         ui = new ServiceUI(this, name);
     }
 
@@ -35,20 +37,33 @@ public class KitchenService extends Service {
                 ui.updateArea("Boiling Kettle");
                 break;
             case Constants.KETTLE_STATUS:
-                sendBack(getKettleStatus());
+                sendBack(getStatus());
                 break;
             case Constants.OVEN_ON_REQUEST:
                 sendBack(Constants.REQUEST_OK);
-                isON = true;
+                ovenOn = true;
                 ui.updateArea("Turning on Oven");
                 break;
             case Constants.OVEN_OFF_REQUEST:
                 sendBack(Constants.REQUEST_OK);
-                isON = false;
+                ovenOn = false;
                 ui.updateArea("Turning off Oven");
                 break;
             case Constants.OVEN_STATUS:
                 sendBack(getOvenStatus());
+                break;
+            case Constants.TAP_ON_REQUEST:
+                sendBack(Constants.REQUEST_OK);
+                tapOn = true;
+                ui.updateArea("Turning on tap");
+                break;
+            case Constants.TAP_OFF_REQUEST:
+                sendBack(Constants.REQUEST_OK);
+                tapOn = false;
+                ui.updateArea("Turning off tap");
+                break;
+            case Constants.TAP_STATUS:
+                sendBack(getTapStatus());
                 break;
             default:
                 sendBack(Constants.BAD_COMMAND + " - " + action);
@@ -69,27 +84,34 @@ public class KitchenService extends Service {
 
     @Override
     public String getStatus() {
-        return null;
+             return getKettleStatus()+ " "+getOvenStatus()+" "+getTapStatus();
     }
 
     @Override
     public String getLightsStatus() {return null;}
 
+    public String getTapStatus() {
+       if (tapOn) {
+            return "Tap in ON.";
+        } else {
+            return "Tap is OFF.";
+        }
+    }
+
+
 
     public String getOvenStatus() {
-        String status ="";
-        if(isON){
-            status = "ON";
-        }else if(!isON){
-             status = "OFF";
-
+        if (ovenOn) {
+            return "Oven in ON.";
+        } else  {
+            return "Oven is OFF.";
         }
-        return "Oven is "+status;
     }
 
-    public String getKettleStatus() {
+    public String getKettleStatus(){
         return "Kettle is "+percentBoiled + "% boiled. ";
     }
+
 
     public static void main(String[] args) throws IOException {
         new KitchenService(Constants.KITCHEN_SERVICE_NAME);

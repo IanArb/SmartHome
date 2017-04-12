@@ -10,6 +10,8 @@ public class Constants {
     public static final String LIGHTS_STATUS = "lights_status";
     public static final String OVEN_STATUS = "oven_status";
     public static final String KETTLE_STATUS = "kettle_status";
+    public static final String BOILER_STATUS = "boiler_status";
+    public static final String TAP_STATUS = "tap_status";
 
     public static final String BAD_COMMAND = "bad Command";
     public static final String REQUEST_OK = "OK";
@@ -23,6 +25,10 @@ public class Constants {
     public static final String OVEN_ON_REQUEST = "Oven ON";
     public static final String OVEN_OFF_REQUEST = "Oven OFF";
     public static final String KETTLE_BOIL_REQUEST = "Boiled";
+
+    public static final String TAP_ON_REQUEST = "Tap ON";
+    public static final String TAP_OFF_REQUEST = "Tap OFF";
+    public static final String BOILER_REQUEST = "Boiled";
 
     public static final String KITCHEN_SERVICE_NAME = "Kitchen Service";
     public static final String BATH_SERVICE_NAME = "Bathroom Service";
