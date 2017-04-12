@@ -139,4 +139,6 @@ public abstract class Service extends Thread {
 
     public abstract String getLightsStatus();
 
+    public abstract String getCurtainStatus();
+
 }

@@ -182,8 +182,7 @@ public abstract class Client {
         PrintWriter out = new PrintWriter(pollSocket.getOutputStream(),
                 true);
         out.println(Constants.STATUS_REQUEST);
-        out.println(Constants.LIGHTS_ON_REQUEST);
-        out.println(Constants.LIGHTS_OFF_REQUEST);
+        out.print(Constants.CURTAIN_STATUS);
         BufferedReader in = new BufferedReader(new InputStreamReader(
                 pollSocket.getInputStream()));
         msg = in.readLine();

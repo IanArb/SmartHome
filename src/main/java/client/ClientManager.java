@@ -7,6 +7,8 @@ import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 
+import client.bedroom.BedClient;
+import client.livingroom.LivingRoomClient;
 import clientui.ClientManagerUI;
 
 import java.net.InetAddress;
@@ -18,10 +20,12 @@ public class ClientManager implements ServiceListener {
     private final ClientManagerUI ui;
     private JmDNS jmdns;
     private final BedClient bedClient = new BedClient();
+    private final LivingRoomClient livingRoomClient = new LivingRoomClient();
 
     public ClientManager() throws IOException {
         jmdns = JmDNS.create(InetAddress.getLocalHost());
         jmdns.addServiceListener(bedClient.getServiceType(), this);
+        jmdns.addServiceListener(livingRoomClient.getServiceType(), this);
         ui = new ClientManagerUI(this);
     }
 
@@ -48,7 +52,10 @@ public class ClientManager implements ServiceListener {
     }
 
     private void removeService(String type, String name, ServiceInfo newService) {
-        if (bedClient.getServiceType().equals(type) && bedClient.hasMultiple()) {
+        boolean isBedServiceType = bedClient.getServiceType().equals(type);
+        boolean isLivingServiceType = livingRoomClient.getServiceType().equals(type);
+
+        if (isBedServiceType && bedClient.hasMultiple()) {
             if (bedClient.isCurrent(name)) {
                 ServiceInfo[] a = jmdns.list(type);
                 for (ServiceInfo in : a) {
@@ -59,10 +66,27 @@ public class ClientManager implements ServiceListener {
                 bedClient.switchService(newService);
             }
             bedClient.remove(name);
-        } else if (bedClient.getServiceType().equals(type)) {
+        } else if (isBedServiceType) {
             ui.removePanel(bedClient.returnUI());
             bedClient.disable();
             bedClient.initialized = false;
+        }
+
+        if(isLivingServiceType && livingRoomClient.hasMultiple()) {
+            if(livingRoomClient.isCurrent(name)) {
+                ServiceInfo[] serviceInfos = jmdns.list(type);
+                for(ServiceInfo serviceInfo : serviceInfos) {
+                    if(!serviceInfo.getName().equals(name)) {
+                        newService = serviceInfo;
+                    }
+                }
+                livingRoomClient.switchService(newService);
+            }
+            livingRoomClient.remove(name);
+        } else if(isBedServiceType) {
+            ui.removePanel(livingRoomClient.returnUI());
+            livingRoomClient.disable();
+            livingRoomClient.initialized = false;
         }
     }
 
@@ -72,18 +96,33 @@ public class ClientManager implements ServiceListener {
         int port = serviceEvent.getInfo().getPort();
         String type = serviceEvent.getInfo().getType();
 
-        initService(serviceEvent, address, port, type);
+        initBedService(serviceEvent, address, port, type);
+        initLivingService(serviceEvent, address, port, type);
     }
 
-    private void initService(ServiceEvent serviceEvent, String address, int port, String type) {
-        if (bedClient.getServiceType().equals(type) && !bedClient.isInitialized()) {
+    private void initBedService(ServiceEvent serviceEvent, String address, int port, String type) {
+        boolean isBedServiceType = bedClient.getServiceType().equals(type);
+
+        if (isBedServiceType && !bedClient.isInitialized()) {
             bedClient.setUp(address, port);
             ui.addPanel(bedClient.returnUI(), bedClient.getName());
             bedClient.setCurrent(serviceEvent.getInfo());
             bedClient.addChoice(serviceEvent.getInfo());
-        } else if (bedClient.getServiceType().equals(type)
-                && bedClient.isInitialized()) {
+        } else if (isBedServiceType && bedClient.isInitialized()) {
             bedClient.addChoice(serviceEvent.getInfo());
+        }
+    }
+
+    private void initLivingService(ServiceEvent serviceEvent, String address, int port, String type) {
+        boolean isLivingServiceType = livingRoomClient.getServiceType().equals(type);
+
+        if (isLivingServiceType && !livingRoomClient.isInitialized()) {
+            livingRoomClient.setUp(address, port);
+            ui.addPanel(livingRoomClient.returnUI(), livingRoomClient.getName());
+            livingRoomClient.setCurrent(serviceEvent.getInfo());
+            livingRoomClient.addChoice(serviceEvent.getInfo());
+        } else if(livingRoomClient.getServiceType().equals(type) && livingRoomClient.isInitialized()) {
+            livingRoomClient.addChoice(serviceEvent.getInfo());
         }
     }
 

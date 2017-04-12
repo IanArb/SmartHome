@@ -44,7 +44,7 @@ public abstract class ClientUI extends JPanel implements ActionListener, ItemLis
         services.setBounds(170, 5, 200, 30);
         controls = new JPanel();
         controls.setBounds(5, UIConstants.CONTROLY, UIConstants.COMPONENTWIDTH,
-                50);
+                100);
         controls.setLayout(new FlowLayout());
         controls.setBorder(BorderFactory.createLineBorder(Color.black));
         add(controls);
@@ -65,12 +65,6 @@ public abstract class ClientUI extends JPanel implements ActionListener, ItemLis
         for(JToggleButton jToggleButton: toggleButtons) {
             jToggleButton.addItemListener(this);
             controls.add(jToggleButton);
-        }
-    }
-
-    public void addLabel(JLabel[] jLabels) {
-        for(JLabel jLabel : jLabels) {
-            controls.add(jLabel);
         }
     }
 
