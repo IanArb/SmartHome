@@ -20,7 +20,6 @@ public class LivingRoomService extends Service {
     private boolean isOn;
 
     private int warmPercentage;
-    private int curtainPercentage;
 
     public LivingRoomService(String name) {
         super(name, Constants.UDP_SOCKET_LIVING);
@@ -29,7 +28,6 @@ public class LivingRoomService extends Service {
         isOpen = false;
         isOn = false;
         warmPercentage = 0;
-        curtainPercentage = 0;
         ui = new ServiceUI(this, name);
     }
 
@@ -61,13 +59,11 @@ public class LivingRoomService extends Service {
                 sendBack(getCurtainStatus());
                 break;
             case Constants.CURTAIN_OPEN_REQUEST:
-                timer.schedule(new CurtainTask(), 0, 2000);
                 sendBack(Constants.REQUEST_OK);
                 ui.updateArea("Opening curtains");
                 isOpen = true;
                 break;
             case Constants.CURTAIN_CLOSE_REQUEST:
-                timer.schedule(new CurtainTask(), 0, 2000);
                 sendBack(Constants.REQUEST_OK);
                 ui.updateArea("Closing curtains");
                 isOpen = false;
@@ -101,16 +97,6 @@ public class LivingRoomService extends Service {
         }
     }
 
-    private class CurtainTask extends TimerTask {
-
-        @Override
-        public void run() {
-            if(curtainPercentage < 100) {
-                curtainPercentage += 10;
-            }
-        }
-    }
-
     @Override
     public String getStatus() {
         return "Fireplace is " + warmPercentage + "% warm";
@@ -128,7 +114,13 @@ public class LivingRoomService extends Service {
     }
 
     public String getCurtainStatus() {
-        return "Curtain is " + curtainPercentage + "% closing";
+        String message;
+        if(isOpen) {
+            message = "Curtains are open";
+        } else {
+            message = "Curtains are closed";
+        }
+        return message;
     }
 
     public String getTVStatus() {
