@@ -88,6 +88,12 @@ public class BedService extends Service {
         }
     }
 
+    @Override
+    public String getCurtainStatus() {
+        //Stub method
+        return null;
+    }
+
     public static void main(String[] args) throws IOException {
         new BedService(Constants.BED_SERVICE_NAME);
     }
