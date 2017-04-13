@@ -9,6 +9,7 @@ import utils.Constants;
 public class KitchenClient extends Client {
     private boolean isBoiling= false;
     private boolean isOvenOn = false;
+    private boolean isTapOn = false;
 
     public KitchenClient() {
         super();
@@ -50,6 +51,20 @@ public class KitchenClient extends Client {
         }
     }
 
+    public void tap() {
+        if(!isTapOn) {
+            String action = sendMessage(Constants.TAP_ON_REQUEST);
+            if(action.equals(Constants.REQUEST_OK)) {
+                isTapOn = true;
+                ui.updateArea("Tap is turned on");
+            }
+        } else {
+            sendMessage(Constants.TAP_OFF_REQUEST);
+            isTapOn = false;
+            ui.updateArea("Tap is turned off");
+        }
+    }
+
         @Override
         public void updatePoll(String msg) {
             switch (msg) {
@@ -59,6 +74,7 @@ public class KitchenClient extends Client {
                 default:
                     isBoiling = false;
                     isOvenOn = false;
+                    isTapOn = false;
                     break;
             }
         }
@@ -69,6 +85,7 @@ public class KitchenClient extends Client {
             ui = new KitchenUI(this);
             isBoiling = false;
             isOvenOn = false;
+            isTapOn = false;
 
         }
     }

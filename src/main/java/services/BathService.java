@@ -1,62 +1,69 @@
 package services;
 
+import serviceui.ServiceUI;
+import utils.Constants;
+
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import serviceui.ServiceUI;
-import utils.Constants;
-
 /**
- * The Class BedService.
+ * Created by Fran Firmino on 12/04/2017.
  */
-public class BedService extends Service {
-
+public class BathService extends Service {
     private final Timer timer;
     private int percentHot;
-    private boolean isOn;
+    private boolean lightsOn;
+    private boolean TapOn;
 
-    public BedService(String name) {
-        super(name, Constants.UDP_SOCKET_BED);
+
+    public BathService(String name) {
+        super(name, Constants.UDP_SOCKET_BATH);
         timer = new Timer();
         percentHot = 0;
-        isOn = false;
+        lightsOn = false;
         ui = new ServiceUI(this, name);
     }
 
     @Override
-    public void performAction(String action) {
-        switch (action) {
+    protected void performAction(String action) {
+        switch (action){
             case Constants.STATUS_REQUEST:
                 sendBack(getStatus());
                 break;
-            case Constants.WARM_REQUEST:
+            case Constants.BOILER_REQUEST:
                 timer.schedule(new RemindTask(), 0, 1000);
                 sendBack(Constants.REQUEST_OK);
-                ui.updateArea("Warming bedroom");
+                ui.updateArea("Heating Water");
                 break;
             case Constants.LIGHTS_ON_REQUEST:
                 sendBack(Constants.REQUEST_OK);
-                isOn = true;
+                lightsOn = true;
                 ui.updateArea("Turning on lights");
                 break;
             case Constants.LIGHTS_OFF_REQUEST:
                 sendBack(Constants.REQUEST_OK);
-                isOn = false;
+                lightsOn = false;
                 ui.updateArea("Turning off lights");
                 break;
             case Constants.LIGHTS_STATUS:
                 sendBack(getLightsStatus());
                 break;
-            case Constants.LAMP_ON_REQUEST:
+            case Constants.TAP_ON_REQUEST:
                 sendBack(Constants.REQUEST_OK);
-                isOn = false;
-                ui.updateArea("Turning on lamp");
+                TapOn = true;
+                ui.updateArea("Turning on tap");
                 break;
-            case Constants.LAMP_OFF_REQUEST:
+            case Constants.TAP_OFF_REQUEST:
                 sendBack(Constants.REQUEST_OK);
-                isOn = false;
-                ui.updateArea("Turning off lamp");
+                TapOn = false;
+                ui.updateArea("Turning off tap");
+                break;
+            case Constants.TAP_STATUS:
+                sendBack(getTapStatus());
+                break;
+            case Constants.BOILER_STATUS:
+                sendBack(getBoilerStatus());
                 break;
             default:
                 sendBack(Constants.BAD_COMMAND + " - " + action);
@@ -76,18 +83,32 @@ public class BedService extends Service {
 
     @Override
     public String getStatus() {
-        return "Bedroom is " + percentHot + "% warmed.";
+       return getBoilerStatus()+" "+getLightsStatus()+ " "+ getTapStatus();
     }
 
     public String getLightsStatus() {
-        if(isOn) {
-            return "Lights are on";
+        if(lightsOn) {
+            return "Lights are on.";
         } else {
-            return "Lights are off";
+            return "Lights are off.";
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        new BedService(Constants.BED_SERVICE_NAME);
+    public String getTapStatus(){
+        if(TapOn) {
+            return "Taps are on.";
+        } else {
+            return "Taps are off.";
+        }
     }
+
+    public String getBoilerStatus() {
+        return "Water is " + percentHot + "% hot.";
+    }
+
+    public static void main(String[] args) throws IOException {
+        new BathService(Constants.BATH_SERVICE_NAME);
+    }
+
+
 }
