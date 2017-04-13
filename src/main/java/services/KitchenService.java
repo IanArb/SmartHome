@@ -87,9 +87,6 @@ public class KitchenService extends Service {
              return getKettleStatus()+ " "+getOvenStatus()+" "+getTapStatus();
     }
 
-    @Override
-    public String getLightsStatus() {return null;}
-
     public String getTapStatus() {
        if (tapOn) {
             return "Tap in ON.";
@@ -110,11 +107,6 @@ public class KitchenService extends Service {
 
     public String getKettleStatus(){
         return "Kettle is "+percentBoiled + "% boiled. ";
-    }
-
-    @Override
-    public String getCurtainStatus() {
-        return null;
     }
 
     public static void main(String[] args) throws IOException {
