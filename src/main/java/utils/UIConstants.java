@@ -14,6 +14,8 @@ public class UIConstants {
     public static final String TV_LABEL = "TV: ON/OFF";
     public static final String TAP_ON = "Tap: ON";
     public static final String TAP_OFF = "Tap: OFF";
+    public static final String LIGHTS_ON = "Lights ON";
+    public static final String LIGHTS_OFF = "Lights: OFF";
 
     public static final String BOIL_BUTTON = "Boil Kettle";
     public static final String BOILER_BUTTON = "Heat Water";
