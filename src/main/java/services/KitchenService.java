@@ -112,6 +112,10 @@ public class KitchenService extends Service {
         return "Kettle is "+percentBoiled + "% boiled. ";
     }
 
+    @Override
+    public String getCurtainStatus() {
+        return null;
+    }
 
     public static void main(String[] args) throws IOException {
         new KitchenService(Constants.KITCHEN_SERVICE_NAME);

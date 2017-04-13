@@ -86,7 +86,6 @@ public class BathService extends Service {
        return getBoilerStatus()+" "+getLightsStatus()+ " "+ getTapStatus();
     }
 
-    @Override
     public String getLightsStatus() {
         if(lightsOn) {
             return "Lights are on.";

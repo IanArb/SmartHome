@@ -79,19 +79,12 @@ public class BedService extends Service {
         return "Bedroom is " + percentHot + "% warmed.";
     }
 
-    @Override
     public String getLightsStatus() {
         if(isOn) {
             return "Lights are on";
         } else {
             return "Lights are off";
         }
-    }
-
-    @Override
-    public String getCurtainStatus() {
-        //Stub method
-        return null;
     }
 
     public static void main(String[] args) throws IOException {

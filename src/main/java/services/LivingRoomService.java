@@ -102,7 +102,6 @@ public class LivingRoomService extends Service {
         return "Fireplace is " + warmPercentage + "% warm";
     }
 
-    @Override
     public String getLightsStatus() {
         String message;
         if(isLightsOn) {
