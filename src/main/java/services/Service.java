@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
@@ -118,7 +119,8 @@ public abstract class Service extends Thread {
     private void getOutStream(String action) {
         try {
             OutputStream outputStream = socket.getOutputStream();
-            out = new PrintWriter(outputStream, true);
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8);
+            out = new PrintWriter(outputStreamWriter, true);
             out.println(action);
             out.close();
         } catch (IOException exception) {

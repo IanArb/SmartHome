@@ -52,12 +52,6 @@ public class LivingRoomService extends Service {
                 isLightsOn = false;
                 ui.updateArea("Turning off lights");
                 break;
-            case Constants.LIGHTS_STATUS:
-                sendBack(getLightsStatus());
-                break;
-            case Constants.CURTAIN_STATUS:
-                sendBack(getCurtainStatus());
-                break;
             case Constants.CURTAIN_OPEN_REQUEST:
                 sendBack(Constants.REQUEST_OK);
                 ui.updateArea("Opening curtains");
@@ -67,9 +61,6 @@ public class LivingRoomService extends Service {
                 sendBack(Constants.REQUEST_OK);
                 ui.updateArea("Closing curtains");
                 isOpen = false;
-                break;
-            case Constants.TV_STATUS:
-                sendBack(getTVStatus());
                 break;
             case Constants.TV_ON_REQUEST:
                 sendBack(Constants.REQUEST_OK);
@@ -99,10 +90,14 @@ public class LivingRoomService extends Service {
 
     @Override
     public String getStatus() {
+        return  getFireplaceStatus() + "\n" + getLightsStatus() + "\n" + getCurtainStatus() +"\n" + getTVStatus();
+    }
+
+    private String getFireplaceStatus() {
         return "Fireplace is " + warmPercentage + "% warm";
     }
 
-    public String getLightsStatus() {
+    private String getLightsStatus() {
         String message;
         if(isLightsOn) {
             message = "Lights are on";
@@ -112,7 +107,7 @@ public class LivingRoomService extends Service {
         return message;
     }
 
-    public String getCurtainStatus() {
+    private String getCurtainStatus() {
         String message;
         if(isOpen) {
             message = "Curtains are open";
@@ -122,7 +117,7 @@ public class LivingRoomService extends Service {
         return message;
     }
 
-    public String getTVStatus() {
+    private String getTVStatus() {
         String message;
         if(isOn) {
             message = "TV is ON";

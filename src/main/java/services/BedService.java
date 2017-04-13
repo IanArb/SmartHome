@@ -4,8 +4,12 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import models.BedModel;
 import serviceui.ServiceUI;
 import utils.Constants;
+import utils.Util;
 
 /**
  * The Class BedService.
@@ -15,20 +19,28 @@ public class BedService extends Service {
     private final Timer timer;
     private int percentHot;
     private boolean isOn;
+    private boolean isLampOn;
 
     public BedService(String name) {
         super(name, Constants.UDP_SOCKET_BED);
         timer = new Timer();
         percentHot = 0;
         isOn = false;
+        isLampOn = false;
         ui = new ServiceUI(this, name);
     }
 
     @Override
     public void performAction(String action) {
+
+        BedModel bedModel = new BedModel();
+
         switch (action) {
             case Constants.STATUS_REQUEST:
-                sendBack(getStatus());
+                bedModel.setStatus(getStatus());
+                Gson gson = new Gson();
+                String toJson = gson.toJson(bedModel);
+                sendBack(toJson);
                 break;
             case Constants.WARM_REQUEST:
                 timer.schedule(new RemindTask(), 0, 1000);
@@ -45,17 +57,14 @@ public class BedService extends Service {
                 isOn = false;
                 ui.updateArea("Turning off lights");
                 break;
-            case Constants.LIGHTS_STATUS:
-                sendBack(getLightsStatus());
-                break;
             case Constants.LAMP_ON_REQUEST:
                 sendBack(Constants.REQUEST_OK);
-                isOn = false;
+                isLampOn = false;
                 ui.updateArea("Turning on lamp");
                 break;
             case Constants.LAMP_OFF_REQUEST:
                 sendBack(Constants.REQUEST_OK);
-                isOn = false;
+                isLampOn = false;
                 ui.updateArea("Turning off lamp");
                 break;
             default:
@@ -76,15 +85,31 @@ public class BedService extends Service {
 
     @Override
     public String getStatus() {
+        return getBedRoomStatus();
+    }
+
+    private String getBedRoomStatus() {
         return "Bedroom is " + percentHot + "% warmed.";
     }
 
-    public String getLightsStatus() {
+    private String getLightsStatus() {
+        String message;
         if(isOn) {
-            return "Lights are on";
+            message = "Lights are on";
         } else {
-            return "Lights are off";
+            message = "Lights are off";
         }
+        return message;
+    }
+
+    private String getLampStatus() {
+        String message;
+        if(isLampOn) {
+            message = "Lamp is on";
+        } else {
+            message = "Lamp is off";
+        }
+        return message;
     }
 
     public static void main(String[] args) throws IOException {
