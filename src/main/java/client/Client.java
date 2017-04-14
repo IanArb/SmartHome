@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -176,24 +178,34 @@ public abstract class Client {
         }
     }
 
-    private void pollSocket() throws IOException {
+    private void pollSocket() {
         String msg;
-        Socket pollSocket = new Socket(serverHost, serverPort);
-        PrintWriter out = new PrintWriter(pollSocket.getOutputStream(),
-                true);
-        out.println(Constants.STATUS_REQUEST);
-        out.print(Constants.CURTAIN_STATUS);
-        BufferedReader in = new BufferedReader(new InputStreamReader(
-                pollSocket.getInputStream()));
-        msg = in.readLine();
-        String prevStatus = serverStatus;
-        serverStatus = msg;
-        if (!prevStatus.equals(serverStatus) && !msg.isEmpty()) {
-            ui.updateArea(msg);
-            updatePoll(msg);
+        Socket pollSocket = new Socket();
+        try {
+            pollSocket.connect(new InetSocketAddress(serverHost, serverPort), 1000);
+
+            PrintWriter out = new PrintWriter(pollSocket.getOutputStream(),
+                    true);
+            out.println(Constants.STATUS_REQUEST);
+            BufferedReader in = new BufferedReader(new InputStreamReader(
+                    pollSocket.getInputStream()));
+            msg = in.readLine();
+            String prevStatus = serverStatus;
+            serverStatus = msg;
+            if (!prevStatus.equals(serverStatus) && !msg.isEmpty()) {
+                ui.updateArea(msg);
+                updatePoll(msg);
+            }
+            out.close();
+            pollSocket.close();
+
+        } catch(UnknownHostException e){
+            System.err.println("Host not found " + e);
+        } catch (IOException e) {
+            System.err.println("I/O error" + e);
+            ui.updateArea("Connection timeout");
         }
-        out.close();
-        pollSocket.close();
+
     }
 
     public void disable() {
