@@ -98,6 +98,7 @@ public abstract class Service extends Thread {
                 ioe.printStackTrace();
             }
         }
+
     }
 
     public String getType() {
@@ -118,7 +119,6 @@ public abstract class Service extends Thread {
 
     private void getOutStream(String action) {
         try {
-            OutputStream outputStream = socket.getOutputStream();
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8);
             out = new PrintWriter(outputStreamWriter, true);
             out.println(action);

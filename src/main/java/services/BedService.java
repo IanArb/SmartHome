@@ -12,7 +12,8 @@ import utils.Constants;
 import utils.Util;
 
 /**
- * The Class BedService.
+ * Created by ianarbuckle on 11/04/2017.
+ *
  */
 public class BedService extends Service {
 
@@ -20,6 +21,7 @@ public class BedService extends Service {
     private int percentHot;
     private boolean isOn;
     private boolean isLampOn;
+    private BedModel model;
 
     public BedService(String name) {
         super(name, Constants.UDP_SOCKET_BED);
@@ -27,19 +29,19 @@ public class BedService extends Service {
         percentHot = 0;
         isOn = false;
         isLampOn = false;
+        model = new BedModel();
         ui = new ServiceUI(this, name);
     }
 
     @Override
     public void performAction(String action) {
 
-        BedModel bedModel = new BedModel();
-
         switch (action) {
             case Constants.STATUS_REQUEST:
-                bedModel.setStatus(getStatus());
-                Gson gson = new Gson();
-                String toJson = gson.toJson(bedModel);
+                model.setWarmRoom(getStatus());
+                model.setLampSwitch(getLampStatus());
+                model.setLightsSwitch(getLightsStatus());
+                String toJson = Util.getJson(model);
                 sendBack(toJson);
                 break;
             case Constants.WARM_REQUEST:
@@ -59,7 +61,7 @@ public class BedService extends Service {
                 break;
             case Constants.LAMP_ON_REQUEST:
                 sendBack(Constants.REQUEST_OK);
-                isLampOn = false;
+                isLampOn = true;
                 ui.updateArea("Turning on lamp");
                 break;
             case Constants.LAMP_OFF_REQUEST:

@@ -7,8 +7,6 @@ import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 
-import client.bedroom.BedClient;
-import client.livingroom.LivingRoomClient;
 import clientui.ClientManagerUI;
 
 import java.net.InetAddress;

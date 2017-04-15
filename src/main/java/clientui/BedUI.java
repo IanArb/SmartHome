@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import javax.swing.*;
 
-import client.bedroom.BedClient;
+import client.BedClient;
 import utils.UIConstants;
 
 public class BedUI extends ClientUI {
@@ -26,8 +26,8 @@ public class BedUI extends ClientUI {
     public void init() {
         super.init();
         warm = new JButton(UIConstants.WARM_BUTTON);
-        lightsToggle = new JToggleButton(UIConstants.LIGHTS_LABEL, true);
-        lampsToggle = new JToggleButton(UIConstants.LAMP_LABEL, true);
+        lightsToggle = new JToggleButton(UIConstants.LIGHTS_ON, true);
+        lampsToggle = new JToggleButton(UIConstants.LAMP_ON, true);
         scroll.setBounds(5, 40, UIConstants.COMPONENTWIDTH, 300);
         addToggle(new JToggleButton[]{lightsToggle, lampsToggle});
         addButton(new JButton[]{warm});
@@ -43,21 +43,40 @@ public class BedUI extends ClientUI {
     @Override
     public void itemStateChanged(ItemEvent itemEvent) {
         Object source = itemEvent.getSource();
+        int stateChange = itemEvent.getStateChange();
 
-        lightsSwitch(source);
+        lightsSwitch(source, stateChange);
 
-        lampSwitch(source);
+        lampSwitch(source, stateChange);
     }
 
-    private void lightsSwitch(Object source) {
+    private void lightsSwitch(Object source, int stateChange) {
         if(source == lightsToggle) {
-            bedClient.lights();
+            switch (stateChange) {
+                case ItemEvent.SELECTED:
+                    bedClient.lights();
+                    lightsToggle.setText(UIConstants.LIGHTS_OFF);
+                    break;
+                case ItemEvent.DESELECTED:
+                    bedClient.lights();
+                    lightsToggle.setText(UIConstants.LIGHTS_ON);
+                    break;
+            }
         }
     }
 
-    private void lampSwitch(Object source) {
+    private void lampSwitch(Object source, int stateChange) {
         if(source == lampsToggle) {
-            bedClient.lamp();
+            switch (stateChange) {
+                case ItemEvent.SELECTED:
+                    bedClient.lamp();
+                    lampsToggle.setText(UIConstants.LAMP_OFF);
+                    break;
+                case ItemEvent.DESELECTED:
+                    bedClient.lamp();
+                    lampsToggle.setText(UIConstants.LAMP_ON);
+                    break;
+            }
         }
     }
 }
