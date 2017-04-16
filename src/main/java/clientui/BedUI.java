@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import javax.swing.*;
 
-import client.bedroom.BedClient;
+import client.BedClient;
 import utils.UIConstants;
 
 public class BedUI extends ClientUI {
@@ -45,7 +45,6 @@ public class BedUI extends ClientUI {
         Object source = itemEvent.getSource();
 
         lightsSwitch(source);
-
         lampSwitch(source);
     }
 

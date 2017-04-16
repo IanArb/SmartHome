@@ -201,9 +201,9 @@ public abstract class Client {
 
         } catch(UnknownHostException e){
             System.err.println("Host not found " + e);
+            ui.updateArea("Connection timeout");
         } catch (IOException e) {
             System.err.println("I/O error" + e);
-            ui.updateArea("Connection timeout");
         }
 
     }

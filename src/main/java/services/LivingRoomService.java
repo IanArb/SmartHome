@@ -1,7 +1,9 @@
 package services;
 
+import models.LivingModel;
 import serviceui.ServiceUI;
 import utils.Constants;
+import utils.Util;
 
 import java.io.IOException;
 import java.util.Timer;
@@ -18,6 +20,7 @@ public class LivingRoomService extends Service {
     private boolean isLightsOn;
     private boolean isOpen;
     private boolean isOn;
+    private LivingModel model;
 
     private int warmPercentage;
 
@@ -28,6 +31,7 @@ public class LivingRoomService extends Service {
         isOpen = false;
         isOn = false;
         warmPercentage = 0;
+        model = new LivingModel();
         ui = new ServiceUI(this, name);
     }
 
@@ -35,50 +39,66 @@ public class LivingRoomService extends Service {
     protected void performAction(String action) {
         switch (action) {
             case Constants.STATUS_REQUEST:
-                sendBack(getStatus());
+                model.setWarmRoom(getStatus());
+                model.setTelevision(getTVStatus());
+                model.setCurtains(getCurtainStatus());
+                model.setLights(getLightsStatus());
+                sendBack(getStatus() + getLightsStatus() + getCurtainStatus() + getTVStatus());
                 break;
             case Constants.WARM_REQUEST:
                 timer.schedule(new WarmTask(), 0, 2000);
-                sendBack(Constants.REQUEST_OK);
-                ui.updateArea("Fireplace is heating");
+                model.setRequest(Constants.REQUEST_OK);
+                model.setWarmRoom(Constants.WARM_REQUEST);
+                String warmJson = Util.getJson(model);
+                sendBack(warmJson);
+                ui.updateArea(warmJson);
                 break;
             case Constants.LIGHTS_ON_REQUEST:
-                sendBack(Constants.REQUEST_OK);
+                model.setLights(Constants.LIGHTS_ON_REQUEST);
+                model.setRequest(Constants.REQUEST_OK);
+                String lightsOnJson = Util.getJson(model);
+                sendBack(lightsOnJson);
                 isLightsOn = true;
-                ui.updateArea("Turning on lights");
+                ui.updateArea(lightsOnJson);
                 break;
             case Constants.LIGHTS_OFF_REQUEST:
-                sendBack(Constants.REQUEST_OK);
+                model.setRequest(Constants.REQUEST_OK);
+                model.setLights(Constants.LIGHTS_OFF_REQUEST);
+                String lightsOffJson = Util.getJson(model);
+                sendBack(lightsOffJson);
                 isLightsOn = false;
-                ui.updateArea("Turning off lights");
-                break;
-            case Constants.LIGHTS_STATUS:
-                sendBack(getLightsStatus());
-                break;
-            case Constants.CURTAIN_STATUS:
-                sendBack(getCurtainStatus());
+                ui.updateArea(lightsOffJson);
                 break;
             case Constants.CURTAIN_OPEN_REQUEST:
-                sendBack(Constants.REQUEST_OK);
-                ui.updateArea("Opening curtains");
+                model.setRequest(Constants.REQUEST_OK);
+                model.setCurtains(Constants.CURTAIN_OPEN_REQUEST);
+                String curtainsOpenJson = Util.getJson(model);
+                sendBack(curtainsOpenJson);
+                ui.updateArea(curtainsOpenJson);
                 isOpen = true;
                 break;
             case Constants.CURTAIN_CLOSE_REQUEST:
-                sendBack(Constants.REQUEST_OK);
-                ui.updateArea("Closing curtains");
+                model.setRequest(Constants.REQUEST_OK);
+                model.setCurtains(Constants.CURTAIN_CLOSE_REQUEST);
+                String curtainsCloseJson = Util.getJson(model);
+                sendBack(curtainsCloseJson);
+                ui.updateArea(curtainsCloseJson);
                 isOpen = false;
                 break;
-            case Constants.TV_STATUS:
-                sendBack(getTVStatus());
-                break;
             case Constants.TV_ON_REQUEST:
-                sendBack(Constants.REQUEST_OK);
-                ui.updateArea("Turning on TV");
+                model.setRequest(Constants.REQUEST_OK);
+                model.setTelevision(Constants.TV_ON_REQUEST);
+                String tvOnJson = Util.getJson(model);
+                sendBack(tvOnJson);
+                ui.updateArea(tvOnJson);
                 isOn = true;
                 break;
             case Constants.TV_OFF_REQUEST:
-                sendBack(Constants.REQUEST_OK);
-                ui.updateArea("Turning off TV");
+                model.setRequest(Constants.REQUEST_OK);
+                model.setTelevision(Constants.TV_OFF_REQUEST);
+                String tvOffJson = Util.getJson(model);
+                sendBack(tvOffJson);
+                ui.updateArea(tvOffJson);
                 isOn = false;
                 break;
             default:
@@ -99,35 +119,39 @@ public class LivingRoomService extends Service {
 
     @Override
     public String getStatus() {
-        return "Fireplace is " + warmPercentage + "% warm";
+        return  getFireplaceStatus();
     }
 
-    public String getLightsStatus() {
+    private String getFireplaceStatus() {
+        return "Fireplace is " + warmPercentage + "% warm ";
+    }
+
+    private String getLightsStatus() {
         String message;
         if(isLightsOn) {
-            message = "Lights are on";
+            message = "Lights ON ";
         } else {
-            message = "Lights are off";
+            message = "Lights OFF ";
         }
         return message;
     }
 
-    public String getCurtainStatus() {
+    private String getCurtainStatus() {
         String message;
         if(isOpen) {
-            message = "Curtains are open";
+            message = "Curtains OPEN ";
         } else {
-            message = "Curtains are closed";
+            message = "Curtains CLOSED ";
         }
         return message;
     }
 
-    public String getTVStatus() {
+    private String getTVStatus() {
         String message;
         if(isOn) {
-            message = "TV is ON";
+            message = "TV ON ";
         } else {
-            message = "TV is OFF";
+            message = "TV OFF ";
         }
         return message;
     }

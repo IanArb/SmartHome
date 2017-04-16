@@ -1,6 +1,6 @@
 package clientui;
 
-import client.livingroom.LivingRoomClient;
+import client.LivingRoomClient;
 import utils.UIConstants;
 
 import javax.swing.*;
