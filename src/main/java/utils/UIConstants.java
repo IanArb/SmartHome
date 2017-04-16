@@ -9,12 +9,9 @@ public class UIConstants {
 
     public static final String WARM_BUTTON = "Warm room";
     public static final String LIGHTS_LABEL = "Lights: ON/OFF";
-    public static final String LAMP_ON = "Lamp: ON";
-    public static final String LAMP_OFF = "Lamp: OFF";
-    public static final String CURTAIN_ON = "Curtain: OPEN";
-    public static final String CURTAIN_OFF = "Curtains: CLOSE";
-    public static final String TV_ON = "TV: ON";
-    public static final String TV_OFF = "TV: OFF";
+    public static final String LAMP_LABEL = "Lamp: ON/OFF";
+    public static final String CURTAIN_LABEL = "Curtain: OPEN/CLOSE";
+    public static final String TV_LABEL = "TV: ON/OFF";
     public static final String TAP_ON = "Tap: ON";
     public static final String TAP_OFF = "Tap: OFF";
     public static final String LIGHTS_ON = "Lights ON";

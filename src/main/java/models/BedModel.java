@@ -8,6 +8,10 @@ import com.google.gson.annotations.SerializedName;
  */
 public class BedModel {
 
+    @SerializedName("request")
+    @Expose
+    private String request;
+
     @SerializedName("lights")
     @Expose
     private String lightsSwitch;
@@ -24,10 +28,19 @@ public class BedModel {
 
     }
 
-    public BedModel(String lightsSwitch, String warmRoom, String lampSwitch) {
+    public BedModel(String request, String lightsSwitch, String warmRoom, String lampSwitch) {
+        this.request = request;
         this.lightsSwitch = lightsSwitch;
         this.warmRoom = warmRoom;
         this.lampSwitch = lampSwitch;
+    }
+
+    public String getRequest() {
+        return request;
+    }
+
+    public void setRequest(String request) {
+        this.request = request;
     }
 
     public String getLightsSwitch() {

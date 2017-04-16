@@ -1,6 +1,7 @@
 package client;
 
 import clientui.LivingRoomUI;
+import models.LivingModel;
 import utils.Constants;
 
 /**
@@ -13,11 +14,13 @@ public class LivingRoomClient extends Client {
     private boolean isCurtainOpen;
     private boolean isWarming;
     private boolean isTvOn;
+    private LivingModel model;
 
     public LivingRoomClient() {
         serviceType = Constants.UDP_SOCKET_LIVING;
         ui = new LivingRoomUI(this);
         name = "Living Room";
+        model = new LivingModel();
     }
 
     @Override
@@ -37,13 +40,15 @@ public class LivingRoomClient extends Client {
     }
 
     public void lights() {
-        if (!isLightsOn) {
-            String action = sendMessage(Constants.LIGHTS_ON_REQUEST);
-            if (action.equals(Constants.REQUEST_OK)) {
-                isLightsOn = true;
-                ui.updateArea("Living room lights are turned on");
-            }
+        if(!isLightsOn) {
+            model.setRequest(Constants.REQUEST_OK);
+            model.setLights(Constants.LIGHTS_ON_REQUEST);
+            sendMessage(model.getLights());
+            isLightsOn = true;
+            ui.updateArea("Living room lights are turned on");
         } else {
+            model.setRequest(Constants.REQUEST_OK);
+            model.setLights(Constants.LIGHTS_OFF_REQUEST);
             sendMessage(Constants.LIGHTS_OFF_REQUEST);
             isLightsOn = false;
             ui.updateArea("Living room lights are turned off");
@@ -52,11 +57,11 @@ public class LivingRoomClient extends Client {
 
     public void warm() {
         if (!isWarming) {
-            String action = sendMessage(Constants.WARM_REQUEST);
-            if (action.equals(Constants.REQUEST_OK)) {
-                isWarming = true;
-                ui.updateArea("Fireplace is heating");
-            }
+            model.setRequest(Constants.REQUEST_OK);
+            model.setWarmRoom(Constants.WARM_REQUEST);
+            sendMessage(model.getWarmRoom());
+            ui.updateArea("Fireplace is warming");
+            isWarming = true;
         } else {
             ui.updateArea("Fireplace is already warming");
         }
@@ -64,12 +69,14 @@ public class LivingRoomClient extends Client {
 
     public void curtains() {
         if(!isCurtainOpen) {
-            String action = sendMessage(Constants.CURTAIN_OPEN_REQUEST);
-            if(action.equals(Constants.REQUEST_OK)) {
-                isCurtainOpen = true;
-                ui.updateArea("Curtains are opened");
-            }
+            model.setRequest(Constants.REQUEST_OK);
+            model.setCurtains(Constants.CURTAIN_OPEN_REQUEST);
+            sendMessage(model.getCurtains());
+            isCurtainOpen = true;
+            ui.updateArea("Curtains are open");
         } else {
+            model.setRequest(Constants.REQUEST_OK);
+            model.setCurtains(Constants.CURTAIN_CLOSE_REQUEST);
             sendMessage(Constants.CURTAIN_CLOSE_REQUEST);
             isCurtainOpen = false;
             ui.updateArea("Curtains are closed");
@@ -78,12 +85,14 @@ public class LivingRoomClient extends Client {
 
     public void tvRemote() {
         if(!isTvOn) {
-            String action = sendMessage(Constants.TV_ON_REQUEST);
-            if(action.equals(Constants.REQUEST_OK)) {
-                isTvOn = true;
-                ui.updateArea("TV is turned on");
-            }
+            model.setRequest(Constants.REQUEST_OK);
+            model.setTelevision(Constants.TV_ON_REQUEST);
+            sendMessage(model.getTelevision());
+            isTvOn = true;
+            ui.updateArea("TV is turned on");
         } else {
+            model.setRequest(Constants.REQUEST_OK);
+            model.setTelevision(Constants.TV_OFF_REQUEST);
             sendMessage(Constants.TV_OFF_REQUEST);
             isTvOn = false;
             ui.updateArea("TV is turned off");

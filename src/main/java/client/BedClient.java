@@ -1,6 +1,7 @@
 package client;
 
 import clientui.BedUI;
+import models.BedModel;
 import utils.Constants;
 
 /**
@@ -12,6 +13,7 @@ public class BedClient extends Client {
     private boolean isWarming;
     private boolean isLightsOn;
     private boolean isLampOn;
+    private BedModel model;
 
     /**
      * Bed Client Constructor.
@@ -21,18 +23,16 @@ public class BedClient extends Client {
         serviceType = Constants.UDP_SOCKET_BED;
         ui = new BedUI(this);
         name = "Bedroom";
+        model = new BedModel();
     }
 
-    /**
-     * sends a message to warm the bed.
-     */
     public void warm() {
         if (!isWarming) {
-            String action = sendMessage(Constants.WARM_REQUEST);
-            if (action.equals(Constants.REQUEST_OK)) {
-                isWarming = true;
-                ui.updateArea("Bedroom is warming");
-            }
+            model.setRequest(Constants.REQUEST_OK);
+            model.setWarmRoom(Constants.WARM_REQUEST);
+            sendMessage(model.getWarmRoom());
+            ui.updateArea("Bedroom is warming");
+            isWarming = true;
         } else {
             ui.updateArea("Bedroom is already warming");
         }
@@ -40,12 +40,14 @@ public class BedClient extends Client {
 
     public void lights() {
         if(!isLightsOn) {
-            String action = sendMessage(Constants.LIGHTS_ON_REQUEST);
-            if(action.equals(Constants.REQUEST_OK)) {
-                isLightsOn = true;
-                ui.updateArea("Bedroom lights are turned on");
-            }
+            model.setRequest(Constants.REQUEST_OK);
+            model.setLightsSwitch(Constants.LIGHTS_ON_REQUEST);
+            sendMessage(model.getLightsSwitch());
+            isLightsOn = true;
+            ui.updateArea("Bedroom lights are turned on");
         } else {
+            model.setRequest(Constants.REQUEST_OK);
+            model.setLightsSwitch(Constants.LIGHTS_OFF_REQUEST);
             sendMessage(Constants.LIGHTS_OFF_REQUEST);
             isLightsOn = false;
             ui.updateArea("Bedroom lights are turned off");
@@ -54,13 +56,15 @@ public class BedClient extends Client {
 
     public void lamp() {
         if(!isLampOn) {
-            String action = sendMessage(Constants.LAMP_ON_REQUEST);
-            if(action.equals(Constants.REQUEST_OK)) {
-                isLampOn = true;
-                ui.updateArea("Bedroom lamp is turned on");
-            }
+            model.setLampSwitch(Constants.LAMP_ON_REQUEST);
+            model.setRequest(Constants.REQUEST_OK);
+            sendMessage(model.getLampSwitch());
+            isLampOn = true;
+            ui.updateArea("Bedroom lamp is turned on");
         } else {
-            sendMessage(Constants.LAMP_OFF_REQUEST);
+            model.setLampSwitch(Constants.LAMP_OFF_REQUEST);
+            model.setRequest(Constants.REQUEST_OK);
+            sendMessage(model.getLampSwitch());
             isLampOn = false;
             ui.updateArea("Bedroom lamp is turned off");
         }

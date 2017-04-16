@@ -31,8 +31,8 @@ public class LivingRoomUI extends ClientUI {
         super.init();
         warm = new JButton(UIConstants.WARM_BUTTON);
         lightsToggle = new JToggleButton(UIConstants.LIGHTS_LABEL, true);
-        curtainToggle = new JToggleButton(UIConstants.CURTAIN_ON, true);
-        tvToggle = new JToggleButton(UIConstants.TV_ON, true);
+        curtainToggle = new JToggleButton(UIConstants.CURTAIN_LABEL, true);
+        tvToggle = new JToggleButton(UIConstants.TV_LABEL, true);
         scroll.setBounds(5, 40, UIConstants.COMPONENTWIDTH, 300);
         addToggle(new JToggleButton[]{lightsToggle, curtainToggle, tvToggle});
         addButton(new JButton[]{warm});
@@ -48,55 +48,27 @@ public class LivingRoomUI extends ClientUI {
     @Override
     public void itemStateChanged(ItemEvent itemEvent) {
         Object source = itemEvent.getSource();
-        int stateChange = itemEvent.getStateChange();
 
-        lightsSwitch(source, stateChange);
-        curtainSwitch(source, stateChange);
-        tvSwitch(source, stateChange);
+        lightsSwitch(source);
+        curtainSwitch(source);
+        tvSwitch(source);
     }
 
-    private void lightsSwitch(Object source, int stateChange) {
+    private void lightsSwitch(Object source) {
         if(source == lightsToggle) {
-            switch (stateChange) {
-                case ItemEvent.SELECTED:
-                    livingRoomClient.lights();
-                    lightsToggle.setText(UIConstants.LIGHTS_OFF);
-                    break;
-                case ItemEvent.DESELECTED:
-                    livingRoomClient.lights();
-                    lightsToggle.setText(UIConstants.LIGHTS_ON);
-                    break;
-            }
+            livingRoomClient.lights();
         }
     }
 
-    private void curtainSwitch(Object source, int stateChange) {
+    private void curtainSwitch(Object source) {
         if(source == curtainToggle) {
-            switch (stateChange) {
-                case ItemEvent.SELECTED:
-                    livingRoomClient.curtains();
-                    lightsToggle.setText(UIConstants.CURTAIN_OFF);
-                    break;
-                case ItemEvent.DESELECTED:
-                    livingRoomClient.curtains();
-                    lightsToggle.setText(UIConstants.CURTAIN_ON);
-                    break;
-            }
+            livingRoomClient.curtains();
         }
     }
 
-    private void tvSwitch(Object source, int stateChange) {
+    private void tvSwitch(Object source) {
         if(source == tvToggle) {
-            switch (stateChange) {
-                case ItemEvent.SELECTED:
-                    livingRoomClient.tvRemote();
-                    lightsToggle.setText(UIConstants.TV_OFF);
-                    break;
-                case ItemEvent.DESELECTED:
-                    livingRoomClient.tvRemote();
-                    lightsToggle.setText(UIConstants.TV_ON);
-                    break;
-            }
+            livingRoomClient.tvRemote();
         }
     }
 }

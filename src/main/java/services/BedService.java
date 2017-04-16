@@ -41,33 +41,47 @@ public class BedService extends Service {
                 model.setWarmRoom(getStatus());
                 model.setLampSwitch(getLampStatus());
                 model.setLightsSwitch(getLightsStatus());
-                String toJson = Util.getJson(model);
-                sendBack(toJson);
+                sendBack(getStatus() + getLampStatus() + getLightsStatus());
                 break;
             case Constants.WARM_REQUEST:
                 timer.schedule(new RemindTask(), 0, 1000);
-                sendBack(Constants.REQUEST_OK);
-                ui.updateArea("Warming bedroom");
+                model.setRequest(Constants.REQUEST_OK);
+                model.setWarmRoom(Constants.WARM_REQUEST);
+                String warmJson = Util.getJson(model);
+                sendBack(warmJson);
+                ui.updateArea(warmJson);
                 break;
             case Constants.LIGHTS_ON_REQUEST:
-                sendBack(Constants.REQUEST_OK);
+                model.setLightsSwitch(Constants.LIGHTS_ON_REQUEST);
+                model.setRequest(Constants.REQUEST_OK);
+                String lightsOnJson = Util.getJson(model);
+                sendBack(lightsOnJson);
                 isOn = true;
-                ui.updateArea("Turning on lights");
+                ui.updateArea(lightsOnJson);
                 break;
             case Constants.LIGHTS_OFF_REQUEST:
-                sendBack(Constants.REQUEST_OK);
+                model.setLightsSwitch(Constants.LIGHTS_OFF_REQUEST);
+                model.setRequest(Constants.REQUEST_OK);
+                String lightsOffJson = Util.getJson(model);
+                sendBack(lightsOffJson);
                 isOn = false;
-                ui.updateArea("Turning off lights");
+                ui.updateArea(lightsOffJson);
                 break;
             case Constants.LAMP_ON_REQUEST:
-                sendBack(Constants.REQUEST_OK);
+                model.setRequest(Constants.REQUEST_OK);
+                model.setLampSwitch(Constants.LAMP_ON_REQUEST);
+                String lampOnJson = Util.getJson(model);
+                sendBack(lampOnJson);
                 isLampOn = true;
-                ui.updateArea("Turning on lamp");
+                ui.updateArea(lampOnJson);
                 break;
             case Constants.LAMP_OFF_REQUEST:
-                sendBack(Constants.REQUEST_OK);
+                model.setRequest(Constants.REQUEST_OK);
+                model.setLampSwitch(Constants.LAMP_OFF_REQUEST);
+                String lampOffJson = Util.getJson(model);
+                sendBack(lampOffJson);
                 isLampOn = false;
-                ui.updateArea("Turning off lamp");
+                ui.updateArea(lampOffJson);
                 break;
             default:
                 sendBack(Constants.BAD_COMMAND + " - " + action);
@@ -91,15 +105,15 @@ public class BedService extends Service {
     }
 
     private String getBedRoomStatus() {
-        return "Bedroom is " + percentHot + "% warmed.";
+        return "Bedroom is " + percentHot + "% warmed. ";
     }
 
     private String getLightsStatus() {
         String message;
         if(isOn) {
-            message = "Lights are on";
+            message = "Lights ON ";
         } else {
-            message = "Lights are off";
+            message = "Lights OFF ";
         }
         return message;
     }
@@ -107,9 +121,9 @@ public class BedService extends Service {
     private String getLampStatus() {
         String message;
         if(isLampOn) {
-            message = "Lamp is on";
+            message = "Lamp ON ";
         } else {
-            message = "Lamp is off";
+            message = "Lamp OFF ";
         }
         return message;
     }
