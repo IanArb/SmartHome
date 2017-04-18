@@ -1,6 +1,7 @@
 package client;
 
 import clientui.BathUI;
+import models.BathModel;
 import utils.Constants;
 
 /**
@@ -11,12 +12,14 @@ public class BathClient extends Client{
     private boolean isHeating = false;
     private boolean isLightsOn = false;
     private boolean isTapOn = false;
+    private BathModel model;
 
     public BathClient() {
         super();
         serviceType = Constants.UDP_SOCKET_BATH;
         ui = new BathUI(this);
         name = "Bathroom";
+        model = new BathModel();
     }
 
     /**
@@ -24,11 +27,11 @@ public class BathClient extends Client{
      */
     public void heat() {
         if (!isHeating) {
-            String action = sendMessage(Constants.BOILER_REQUEST);
-            if (action.equals(Constants.REQUEST_OK)) {
+            model.setRequest(Constants.REQUEST_OK);
+            model.setHeatWater(Constants.BOILER_REQUEST);
+            sendMessage(model.getHeatWater());
                 isHeating = true;
                 ui.updateArea("Water is heating");
-            }
         } else {
             ui.updateArea("Water is already heating");
         }
@@ -36,29 +39,33 @@ public class BathClient extends Client{
 
     public void lights() {
         if(!isLightsOn) {
-            String action = sendMessage(Constants.LIGHTS_ON_REQUEST);
-            if(action.equals(Constants.REQUEST_OK)) {
-                isLightsOn = true;
-                ui.updateArea("Lights are turned on");
-            }
+            model.setRequest(Constants.REQUEST_OK);
+            model.setLightsSwitch(Constants.LIGHTS_ON_REQUEST);
+            sendMessage(model.getLightsSwitch());
+            isLightsOn = true;
+            ui.updateArea("Lights are on");
         } else {
-            sendMessage(Constants.LIGHTS_OFF_REQUEST);
+            model.setRequest(Constants.REQUEST_OK);
+            model.setLightsSwitch(Constants.LIGHTS_OFF_REQUEST);
+            sendMessage(model.getLightsSwitch());
             isLightsOn = false;
-            ui.updateArea("Lights are turned off");
+            ui.updateArea("Lights are off");
         }
     }
 
     public void tap() {
         if(!isTapOn) {
-            String action = sendMessage(Constants.TAP_ON_REQUEST);
-            if(action.equals(Constants.REQUEST_OK)) {
+            model.setTapSwitch(Constants.TAP_ON_REQUEST);
+            model.setRequest(Constants.REQUEST_OK);
+            sendMessage(model.getTapSwitch());
                 isTapOn = true;
-                ui.updateArea("Tap is turned on");
-            }
+                ui.updateArea("Tap is on");
         } else {
-            sendMessage(Constants.TAP_OFF_REQUEST);
+            model.setTapSwitch(Constants.TAP_OFF_REQUEST);
+            model.setRequest(Constants.REQUEST_OK);
+            sendMessage(model.getTapSwitch());
             isTapOn = false;
-            ui.updateArea("Tap is turned off");
+            ui.updateArea("Tap is off");
         }
     }
 

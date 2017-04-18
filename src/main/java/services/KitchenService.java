@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import models.KitchenModel;
 import serviceui.ServiceUI;
 import utils.Constants;
+import utils.Util;
 
 /**
  * Created by Fran Firmino on 11/04/2017.
@@ -15,6 +17,7 @@ public class KitchenService extends Service {
     private boolean tapOn;
     private final Timer timer;
     private int percentBoiled;
+    private KitchenModel model;
 
     public KitchenService(String name) {
         super(name, Constants.UDP_SOCKET_KITCHEN);
@@ -22,6 +25,7 @@ public class KitchenService extends Service {
         percentBoiled = 0;
         ovenOn = false;
         tapOn = false;
+        model = new KitchenModel();
         ui = new ServiceUI(this, name);
     }
 
@@ -29,38 +33,48 @@ public class KitchenService extends Service {
     protected void performAction(String action) {
         switch (action) {
             case Constants.STATUS_REQUEST:
-                sendBack(getStatus());
+                model.setBoilKettle(getStatus());
+                model.setTapSwitch(getTapStatus());
+                model.setOvenSwitch(getOvenStatus());
+                sendBack(getTapStatus() + getOvenStatus()+ getOvenStatus());
                 break;
             case Constants.KETTLE_BOIL_REQUEST:
                 timer.schedule(new RemindTask(), 0, 1000);
-                sendBack(Constants.REQUEST_OK);
-                ui.updateArea("Boiling Kettle");
-                break;
-            case Constants.KETTLE_STATUS:
-                sendBack(getStatus());
+                model.setRequest(Constants.REQUEST_OK);
+                model.setBoilKettle(Constants.KETTLE_BOIL_REQUEST);
+                String boilJson = Util.getJson(model);
+                sendBack(boilJson);
+                ui.updateArea(boilJson);
                 break;
             case Constants.OVEN_ON_REQUEST:
-                sendBack(Constants.REQUEST_OK);
+                model.setOvenSwitch(Constants.OVEN_ON_REQUEST);
+                model.setRequest(Constants.REQUEST_OK);
+                String ovenOnJson = Util.getJson(model);
+                sendBack(ovenOnJson);
                 ovenOn = true;
-                ui.updateArea("Turning on Oven");
+                ui.updateArea(ovenOnJson);
                 break;
             case Constants.OVEN_OFF_REQUEST:
-                sendBack(Constants.REQUEST_OK);
+                model.setRequest(Constants.REQUEST_OK);
+                model.setOvenSwitch(Constants.OVEN_OFF_REQUEST);
+                String ovenOffJson = Util.getJson(model);
+                sendBack(ovenOffJson);
                 ovenOn = false;
-                ui.updateArea("Turning off Oven");
-                break;
-            case Constants.OVEN_STATUS:
-                sendBack(getOvenStatus());
+                ui.updateArea(ovenOffJson);
                 break;
             case Constants.TAP_ON_REQUEST:
-                sendBack(Constants.REQUEST_OK);
-                tapOn = true;
-                ui.updateArea("Turning on tap");
+                model.setRequest(Constants.REQUEST_OK);
+                model.setTapSwitch(Constants.TAP_ON_REQUEST);
+                String tapOnJSon = Util.getJson(model);
+                sendBack(tapOnJSon);
+                ui.updateArea(tapOnJSon);
                 break;
             case Constants.TAP_OFF_REQUEST:
-                sendBack(Constants.REQUEST_OK);
-                tapOn = false;
-                ui.updateArea("Turning off tap");
+                model.setRequest(Constants.REQUEST_OK);
+                model.setTapSwitch(Constants.TAP_OFF_REQUEST);
+                String tapOffJson = Util.getJson(model);
+                sendBack(tapOffJson);
+                ui.updateArea(tapOffJson);
                 break;
             case Constants.TAP_STATUS:
                 sendBack(getTapStatus());
@@ -84,29 +98,28 @@ public class KitchenService extends Service {
 
     @Override
     public String getStatus() {
-             return getKettleStatus()+ " "+getOvenStatus()+" "+getTapStatus();
+        return getKettleStatus();
     }
 
     public String getTapStatus() {
-       if (tapOn) {
-            return "Tap in ON.";
+        if (tapOn) {
+            return "Tap ON ";
         } else {
-            return "Tap is OFF.";
+            return "Tap OFF ";
         }
     }
-
 
 
     public String getOvenStatus() {
         if (ovenOn) {
-            return "Oven in ON.";
-        } else  {
-            return "Oven is OFF.";
+            return "Oven ON ";
+        } else {
+            return "Oven OFF ";
         }
     }
 
-    public String getKettleStatus(){
-        return "Kettle is "+percentBoiled + "% boiled. ";
+    public String getKettleStatus() {
+        return "Kettle is " + percentBoiled + "% boiled. ";
     }
 
     public static void main(String[] args) throws IOException {

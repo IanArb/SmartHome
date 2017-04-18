@@ -1,7 +1,9 @@
 package services;
 
+import models.BathModel;
 import serviceui.ServiceUI;
 import utils.Constants;
+import utils.Util;
 
 import java.io.IOException;
 import java.util.Timer;
@@ -15,6 +17,7 @@ public class BathService extends Service {
     private int percentHot;
     private boolean lightsOn;
     private boolean TapOn;
+    private BathModel model;
 
 
     public BathService(String name) {
@@ -23,47 +26,57 @@ public class BathService extends Service {
         percentHot = 0;
         lightsOn = false;
         ui = new ServiceUI(this, name);
+        model = new BathModel();
     }
 
     @Override
     protected void performAction(String action) {
         switch (action){
             case Constants.STATUS_REQUEST:
-                sendBack(getStatus());
+                model.setHeatWater(getStatus());
+                model.setTapSwitch(getTapStatus());
+                model.setLightsSwitch(getLightsStatus());
+                sendBack(getStatus() + getTapStatus() + getLightsStatus());
                 break;
             case Constants.BOILER_REQUEST:
                 timer.schedule(new RemindTask(), 0, 1000);
-                sendBack(Constants.REQUEST_OK);
-                ui.updateArea("Heating Water");
+                model.setRequest(Constants.REQUEST_OK);
+                model.setHeatWater(Constants.BOILER_REQUEST);
+                String heatJson = Util.getJson(model);
+                sendBack(heatJson);
+                ui.updateArea(heatJson);
                 break;
             case Constants.LIGHTS_ON_REQUEST:
-                sendBack(Constants.REQUEST_OK);
+                model.setLightsSwitch(Constants.LIGHTS_ON_REQUEST);
+                model.setRequest(Constants.REQUEST_OK);
+                String lightsOnJson = Util.getJson(model);
+                sendBack(lightsOnJson);
                 lightsOn = true;
-                ui.updateArea("Turning on lights");
+                ui.updateArea(lightsOnJson);
                 break;
             case Constants.LIGHTS_OFF_REQUEST:
-                sendBack(Constants.REQUEST_OK);
+                model.setLightsSwitch(Constants.LIGHTS_OFF_REQUEST);
+                model.setRequest(Constants.REQUEST_OK);
+                String lightsOffJson = Util.getJson(model);
+                sendBack(lightsOffJson);
                 lightsOn = false;
-                ui.updateArea("Turning off lights");
+                ui.updateArea(lightsOffJson);
                 break;
-            case Constants.LIGHTS_STATUS:
-                sendBack(getLightsStatus());
-                break;
-            case Constants.TAP_ON_REQUEST:
-                sendBack(Constants.REQUEST_OK);
+             case Constants.TAP_ON_REQUEST:
+                 model.setRequest(Constants.REQUEST_OK);
+                 model.setTapSwitch(Constants.TAP_ON_REQUEST);
+                 String tapOnJson = Util.getJson(model);
+                 sendBack(tapOnJson);
                 TapOn = true;
-                ui.updateArea("Turning on tap");
+                ui.updateArea(tapOnJson);
                 break;
             case Constants.TAP_OFF_REQUEST:
-                sendBack(Constants.REQUEST_OK);
+                model.setRequest(Constants.REQUEST_OK);
+                model.setTapSwitch(Constants.TAP_OFF_REQUEST);
+                String tapOffJson = Util.getJson(model);
+                sendBack(tapOffJson);
                 TapOn = false;
-                ui.updateArea("Turning off tap");
-                break;
-            case Constants.TAP_STATUS:
-                sendBack(getTapStatus());
-                break;
-            case Constants.BOILER_STATUS:
-                sendBack(getBoilerStatus());
+                ui.updateArea(tapOffJson);
                 break;
             default:
                 sendBack(Constants.BAD_COMMAND + " - " + action);
@@ -83,22 +96,22 @@ public class BathService extends Service {
 
     @Override
     public String getStatus() {
-       return getBoilerStatus()+" "+getLightsStatus()+ " "+ getTapStatus();
+       return getBoilerStatus();
     }
 
     public String getLightsStatus() {
         if(lightsOn) {
-            return "Lights are on.";
+            return "Lights ON ";
         } else {
-            return "Lights are off.";
+            return "Lights OFF ";
         }
     }
 
     public String getTapStatus(){
         if(TapOn) {
-            return "Taps are on.";
+            return "Taps are ON ";
         } else {
-            return "Taps are off.";
+            return "Taps are OFF ";
         }
     }
 
